@@ -1,1079 +1,4 @@
-**Métricas de Escalabilidade:**
-
-| Aspecto | Sem SRP | Com SRP | Impacto |
-|---------|---------|---------|---------|
-| Tempo para adicionar feature | 2-3 dias | 4-8 horas | **4x mais rápido** |
-| Onboarding de novos devs | 4 semanas | 1 semana | **75% redução** |
-| Capacidade de paralelização | Baixa (20%) | Alta (80%) | **300% aumento** |
-| Reuso de código | 15% | 60% | **300% aumento** |
-| Linhas afetadas por bug fix | 200-500 | 20-50 | **90% redução** |
-
-#### Exemplo: Microsserviços Escaláveis
-
-```java
-// Cada microsserviço segue SRP em nível de sistema
-
-// SERVIÇO: Catálogo de Produtos
-@RestController
-@RequestMapping("/api/produtos")
-public class ProdutoController {
-    private final CatalogoProdutos catalogo;
-    
-    @GetMapping("/{id}")
-    public ResponseEntity<Produto> buscar(@PathVariable String id) {
-        return ResponseEntity.ok(catalogo.buscar(id));
-    }
-}
-
-// SERVIÇO: Gestão de Pedidos
-@RestController
-@RequestMapping("/api/pedidos")
-public class PedidoController {
-    private final ServicoPedido servico;
-    
-    @PostMapping
-    public ResponseEntity<Pedido> criar(@RequestBody PedidoRequest request) {
-        return ResponseEntity.ok(servico.criar(request));
-    }
-}
-
-// SERVIÇO: Processamento de Pagamentos
-@RestController
-@RequestMapping("/api/pagamentos")
-public class PagamentoController {
-    private final ProcessadorPagamento processador;
-    
-    @PostMapping
-    public ResponseEntity<ResultadoPagamento> processar(
-            @RequestBody PagamentoRequest request) {
-        return ResponseEntity.ok(processador.processar(request));
-    }
-}
-
-// Cada serviço pode escalar independentemente
-// Catálogo: 5 instâncias
-// Pedidos: 10 instâncias (mais demanda)
-// Pagamentos: 3 instâncias
-```
-
-### 8.4 Análise Quantitativa de Impacto
-
-#### Estudo de Caso Real: Refactoring de E-commerce
-
-**Projeto:** Sistema de e-commerce com 3 anos de desenvolvimento  
-**Equipe:** 15 desenvolvedores  
-**Código:** 250.000 linhas
-
-**Fase 1: Antes da Aplicação do SRP**
-```java
-// Estatísticas do código
-public class AnaliseCodigo {
-    // Classe principal: OrderManager
-    // - 2.847 linhas
-    // - 87 métodos
-    // - 42 dependências diretas
-    // - Complexidade ciclomática: 156
-    
-    // Métricas de qualidade
-    // - Cobertura de testes: 23%
-    // - Bugs por sprint: 18
-    // - Tempo médio de correção: 6 horas
-    // - Dívida técnica: 45 dias
-    // - Satisfação do dev: 4/10
-}
-```
-
-**Fase 2: Após 6 Meses de Aplicação do SRP**
-```java
-public class ResultadosRefactoring {
-    // Classe principal agora dividida em:
-    // - OrderService (120 linhas)
-    // - OrderValidator (80 linhas)
-    // - OrderCalculator (95 linhas)
-    // - OrderRepository (60 linhas)
-    // - OrderNotifier (75 linhas)
-    // - OrderLogger (45 linhas)
-    
-    // Métricas de qualidade
-    // - Cobertura de testes: 87% (+277%)
-    // - Bugs por sprint: 4 (-78%)
-    // - Tempo médio de correção: 1.5 horas (-75%)
-    // - Dívida técnica: 8 dias (-82%)
-    // - Satisfação do dev: 8.5/10 (+112%)
-    
-    // Métricas de produtividade
-    // - Velocidade do time: +65%
-    // - Features entregues por sprint: +45%
-    // - Retrabalho: -70%
-    // - Conflitos de merge: -85%
-}
-```
-
-#### ROI (Return on Investment) do SRP
-
-```java
-public class CalculadoraROI {
-    public static void calcularROI() {
-        // INVESTIMENTO
-        int horasRefactoring = 480; // 3 meses, 2 devs
-        double custoHoraDev = 50.0;
-        double investimentoTotal = horasRefactoring * custoHoraDev;
-        // Total: R$ 24.000
-        
-        // RETORNO (por ano)
-        double economiaBugs = 18 * 4 * 12 * custoHoraDev; // R$ 43.200
-        double economiaManutencao = 10 * 52 * custoHoraDev; // R$ 26.000
-        double ganhoVelocidade = 8 * 52 * custoHoraDev; // R$ 20.800
-        double retornoTotal = economiaBugs + economiaManutencao + ganhoVelocidade;
-        // Total: R$ 90.000
-        
-        double roi = ((retornoTotal - investimentoTotal) / investimentoTotal) * 100;
-        System.out.println("ROI: " + roi + "%"); // ROI: 275%
-        System.out.println("Payback: " + (investimentoTotal / (retornoTotal / 12)) + " meses");
-        // Payback: 3.2 meses
-    }
-}
-```
-
-### 8.5 Síntese do Impacto
-
-```
-┌────────────────────────────────────────────────────────────┐
-│          BENEFÍCIOS DO SRP - VISÃO CONSOLIDADA             │
-├────────────────────────────────────────────────────────────┤
-│                                                             │
-│  🔧 MANUTENIBILIDADE                                       │
-│     ├─ Mudanças isoladas e seguras                        │
-│     ├─ Menor risco de regressão                           │
-│     ├─ Código autodocumentado                             │
-│     └─ Facilita debugging                                 │
-│                                                             │
-│  ✅ TESTABILIDADE                                          │
-│     ├─ Testes unitários simples                           │
-│     ├─ Mocks fáceis de criar                              │
-│     ├─ Alta cobertura alcançável                          │
-│     └─ Testes rápidos e confiáveis                        │
-│                                                             │
-│  📈 ESCALABILIDADE                                         │
-│     ├─ Desenvolvimento paralelo                           │
-│     ├─ Crescimento orgânico                               │
-│     ├─ Onboarding facilitado                              │
-│     └─ Redução de conflitos                               │
-│                                                             │
-│  🔄 REUSABILIDADE                                          │
-│     ├─ Componentes especializados                         │
-│     ├─ Fácil composição                                   │
-│     ├─ DRY (Don't Repeat Yourself)                        │
-│     └─ Biblioteca de componentes                          │
-│                                                             │
-│  🎯 CLAREZA E COMPREENSÃO                                  │
-│     ├─ Intenção explícita                                 │
-│     ├─ Menos complexidade cognitiva                       │
-│     ├─ Nomes descritivos possíveis                        │
-│     └─ Estrutura lógica clara                             │
-│                                                             │
-│  💰 ECONOMIA                                               │
-│     ├─ Menor custo de manutenção                          │
-│     ├─ Menos bugs em produção                             │
-│     ├─ Maior produtividade                                │
-│     └─ ROI positivo em curto prazo                        │
-│                                                             │
-└────────────────────────────────────────────────────────────┘
-```
-
----
-
-## 📚 Referências e Recursos
-
-### Livros Fundamentais
-- **"Clean Code"** - Robert C. Martin (Uncle Bob)
-- **"Agile Software Development, Principles, Patterns, and Practices"** - Robert C. Martin
-- **"Design Patterns: Elements of Reusable Object-Oriented Software"** - Gang of Four
-- **"Refactoring: Improving the Design of Existing Code"** - Martin Fowler
-
-### Artigos e Papers
-- "The Single Responsibility Principle" - Robert C. Martin
-- "On the Criteria To Be Used in Decomposing Systems into Modules" - David Parnas (1972)
-
-### Ferramentas de Análise
-```java
-// Ferramentas para detectar violações do SRP
-
-// 1. SonarQube - Análise de complexidade
-// Identifica classes com muitas responsabilidades
-// Métricas: complexidade ciclomática, acoplamento
-
-// 2. JDepend - Análise de dependências
-// Calcula métricas de acoplamento e coesão
-
-// 3. PMD - Detector de code smells
-// Regras: God Class, Long Method, Feature Envy
-
-// 4. Checkstyle - Verificação de padrões
-// Configura limites de linhas por classe/método
-
-// Exemplo de configuração PMD
-public class ConfiguracaoPMD {
-    // pmd-rules.xml
-    /*
-    <rule name="GodClass">
-        <properties>
-            <property name="methods" value="20" />
-            <property name="lines" value="200" />
-        </properties>
-    </rule>
-    */
-}
-```
-
----
-
-## 🎓 Conclusão
-
-O **Princípio da Responsabilidade Única** não é apenas uma diretriz técnica, mas uma filosofia de design que permeia todos os aspectos do desenvolvimento de software de qualidade. Sua aplicação consistente resulta em:
-
-1. **Código mais limpo e profissional**
-2. **Equipes mais produtivas e satisfeitas**
-3. **Software mais robusto e confiável**
-4. **Menor custo total de propriedade**
-5. **Maior agilidade para mudanças de negócio**
-
-### Recomendações Práticas
-
-```java
-public class GuiaAplicacaoPratica {
-    
-    // 1. Comece pequeno
-    public void iniciar() {
-        // Não refatore tudo de uma vez
-        // Aplique SRP em código novo primeiro
-        // Refatore gradualmente código legado
-    }
-    
-    // 2. Use revisão de código
-    public void revisarCodigo() {
-        // Pergunta-chave: "Esta classe tem mais de uma razão para mudar?"
-        // Se sim, considere refatorar
-    }
-    
-    // 3. Automatize verificações
-    public void automatizar() {
-        // Configure ferramentas de análise estática
-        // Defina limites razoáveis (ex: 200 linhas por classe)
-        // Integre ao CI/CD
-    }
-    
-    // 4. Eduque a equipe
-    public void educar() {
-        // Sessões de code review focadas em SOLID
-        // Pair programming para disseminar conhecimento
-        // Documentação de padrões do projeto
-    }
-    
-    // 5. Meça e melhore
-    public void medir() {
-        // Acompanhe métricas de qualidade
-        // Celebre melhorias
-        // Ajuste processo baseado em dados
-    }
-}
-```
-
-### Chamada para Ação
-
-> **"O código que escrevemos hoje é o legado que deixamos para o amanhã."**
-
-Aplique o SRP não por obrigação, mas por **profissionalismo** e **respeito** aos futuros mantenedores do código (que podem ser você mesmo daqui 6 meses).
-
----
-
-## 📞 Contato e Contribuições
-
-Este documento é um **guia vivo** e pode ser atualizado com novos exemplos, casos de uso e melhores práticas.
-
-**Contribua:**
-- Compartilhe seus casos de sucesso na aplicação do SRP
-- Sugira novos exemplos práticos
-- Reporte padrões e anti-padrões que encontrou
-
----
-
-**Versão:** 1.0  
-**Última Atualização:** Setembro 2025
-
----
-
-## 🔍 Apêndice A: Checklist de Revisão SRP
-
-Use este checklist durante code reviews para garantir aderência ao SRP:
-
-```java
-public class ChecklistSRP {
-    
-    // ✅ CRITÉRIOS DE CONFORMIDADE
-    
-    public boolean verificarConformidade(Classe classe) {
-        return verificarNome(classe)
-            && verificarTamanho(classe)
-            && verificarCoesao(classe)
-            && verificarDependencias(classe)
-            && verificarMotivosParaMudar(classe);
-    }
-    
-    // 1. NOME DA CLASSE
-    private boolean verificarNome(Classe classe) {
-        // ✅ Nome descreve UMA responsabilidade
-        // ✅ Não contém "E", "Gerenciador", "Controlador", "Utilitário"
-        // ❌ NomeClasseQueGerenciaEValida
-        // ✅ ValidadorUsuario, GeradorRelatorio
-        return true;
-    }
-    
-    // 2. TAMANHO
-    private boolean verificarTamanho(Classe classe) {
-        // ✅ Menos de 200 linhas (ideal: 50-150)
-        // ✅ Menos de 10 métodos públicos
-        // ✅ Menos de 5 dependências
-        return classe.getLinhas() < 200 
-            && classe.getMetodosPublicos() < 10
-            && classe.getDependencias().size() < 5;
-    }
-    
-    // 3. COESÃO
-    private boolean verificarCoesao(Classe classe) {
-        // ✅ Todos os métodos usam os mesmos atributos
-        // ✅ Métodos colaboram entre si
-        // ❌ Métodos independentes que não se relacionam
-        return calcularCoesao(classe) > 0.7; // 70%+ de coesão
-    }
-    
-    // 4. DEPENDÊNCIAS
-    private boolean verificarDependencias(Classe classe) {
-        // ✅ Dependências do mesmo domínio/contexto
-        // ❌ Dependências de múltiplos contextos (DB, Email, File, HTTP)
-        Set<String> contextos = classe.getDependencias()
-            .stream()
-            .map(d -> d.getContexto())
-            .collect(Collectors.toSet());
-        return contextos.size() <= 2;
-    }
-    
-    // 5. MOTIVOS PARA MUDAR
-    private boolean verificarMotivosParaMudar(Classe classe) {
-        // Perguntas chave:
-        // - Quantos stakeholders solicitariam mudanças nesta classe?
-        // - Mudança no formato de saída afeta esta classe?
-        // - Mudança na persistência afeta esta classe?
-        // - Mudança na regra de negócio afeta esta classe?
-        // 
-        // ✅ Apenas 1 resposta "sim" = SRP correto
-        // ❌ 2+ respostas "sim" = viola SRP
-        return contarMotivosParaMudar(classe) == 1;
-    }
-    
-    private double calcularCoesao(Classe classe) {
-        // LCOM (Lack of Cohesion in Methods)
-        // Quanto menor, melhor a coesão
-        return 0.8; // Implementação simplificada
-    }
-    
-    private int contarMotivosParaMudar(Classe classe) {
-        return 1; // Implementação simplificada
-    }
-}
-```
-
----
-
-## 🎯 Apêndice B: Padrões de Design e SRP
-
-O SRP é a base para diversos padrões de design:
-
-### B.1 Strategy Pattern
-
-```java
-// O Strategy Pattern naturalmente segue SRP
-// Cada estratégia tem UMA responsabilidade
-
-public interface EstrategiaDesconto {
-    double calcular(double valor);
-}
-
-// Responsabilidade: Desconto para clientes VIP
-public class DescontoVIP implements EstrategiaDesconto {
-    @Override
-    public double calcular(double valor) {
-        return valor * 0.20; // 20% de desconto
-    }
-}
-
-// Responsabilidade: Desconto para primeira compra
-public class DescontoPrimeiraCompra implements EstrategiaDesconto {
-    @Override
-    public double calcular(double valor) {
-        return valor * 0.10; // 10% de desconto
-    }
-}
-
-// Responsabilidade: Desconto sazonal
-public class DescontoBlackFriday implements EstrategiaDesconto {
-    @Override
-    public double calcular(double valor) {
-        return valor * 0.50; // 50% de desconto
-    }
-}
-
-// Contexto que usa a estratégia
-public class CalculadoraPreco {
-    private EstrategiaDesconto estrategia;
-    
-    public CalculadoraPreco(EstrategiaDesconto estrategia) {
-        this.estrategia = estrategia;
-    }
-    
-    public double calcularPrecoFinal(double precoBase) {
-        double desconto = estrategia.calcular(precoBase);
-        return precoBase - desconto;
-    }
-    
-    public void setEstrategia(EstrategiaDesconto estrategia) {
-        this.estrategia = estrategia;
-    }
-}
-
-// Uso
-public class ExemploStrategy {
-    public static void main(String[] args) {
-        double preco = 1000.0;
-        
-        // Cliente VIP
-        CalculadoraPreco calc = new CalculadoraPreco(new DescontoVIP());
-        System.out.println("Preço VIP: " + calc.calcularPrecoFinal(preco));
-        
-        // Black Friday
-        calc.setEstrategia(new DescontoBlackFriday());
-        System.out.println("Preço Black Friday: " + calc.calcularPrecoFinal(preco));
-    }
-}
-```
-
-### B.2 Observer Pattern
-
-```java
-// Observer Pattern com SRP: cada observador tem uma responsabilidade
-
-public interface Observer {
-    void atualizar(Evento evento);
-}
-
-// Responsabilidade: Enviar notificações por email
-public class EmailObserver implements Observer {
-    private final ServicoEmail servicoEmail;
-    
-    public EmailObserver(ServicoEmail servicoEmail) {
-        this.servicoEmail = servicoEmail;
-    }
-    
-    @Override
-    public void atualizar(Evento evento) {
-        if (evento.getTipo().equals("PEDIDO_CRIADO")) {
-            servicoEmail.enviar(
-                evento.getDestinatario(),
-                "Pedido Confirmado",
-                "Seu pedido foi criado com sucesso!"
-            );
-        }
-    }
-}
-
-// Responsabilidade: Registrar logs
-public class LogObserver implements Observer {
-    private final Logger logger;
-    
-    public LogObserver(Logger logger) {
-        this.logger = logger;
-    }
-    
-    @Override
-    public void atualizar(Evento evento) {
-        logger.info(String.format(
-            "Evento: %s | Timestamp: %s",
-            evento.getTipo(),
-            evento.getTimestamp()
-        ));
-    }
-}
-
-// Responsabilidade: Atualizar métricas
-public class MetricasObserver implements Observer {
-    private final ServicoMetricas metricas;
-    
-    public MetricasObserver(ServicoMetricas metricas) {
-        this.metricas = metricas;
-    }
-    
-    @Override
-    public void atualizar(Evento evento) {
-        metricas.incrementar("eventos." + evento.getTipo().toLowerCase());
-    }
-}
-
-// Subject
-public class PublicadorEventos {
-    private final List<Observer> observers = new ArrayList<>();
-    
-    public void adicionarObserver(Observer observer) {
-        observers.add(observer);
-    }
-    
-    public void removerObserver(Observer observer) {
-        observers.remove(observer);
-    }
-    
-    public void notificar(Evento evento) {
-        for (Observer observer : observers) {
-            observer.atualizar(evento);
-        }
-    }
-}
-```
-
-### B.3 Factory Pattern
-
-```java
-// Factory Pattern com SRP: fábrica tem APENAS responsabilidade de criação
-
-// Responsabilidade: Criar processadores de pagamento
-public class ProcessadorPagamentoFactory {
-    
-    public ProcessadorPagamento criar(String tipo) {
-        switch (tipo.toUpperCase()) {
-            case "CARTAO":
-                return criarProcessadorCartao();
-            case "BOLETO":
-                return criarProcessadorBoleto();
-            case "PIX":
-                return criarProcessadorPix();
-            default:
-                throw new IllegalArgumentException("Tipo inválido: " + tipo);
-        }
-    }
-    
-    private ProcessadorPagamento criarProcessadorCartao() {
-        GatewayCartao gateway = new GatewayCartao("api-key-123");
-        ValidadorCartao validador = new ValidadorCartao();
-        return new ProcessadorCartao(gateway, validador);
-    }
-    
-    private ProcessadorPagamento criarProcessadorBoleto() {
-        GeradorBoleto gerador = new GeradorBoleto();
-        return new ProcessadorBoleto(gerador);
-    }
-    
-    private ProcessadorPagamento criarProcessadorPix() {
-        GeradorQRCode gerador = new GeradorQRCode();
-        return new ProcessadorPix(gerador);
-    }
-}
-
-// Cada processador tem SUA responsabilidade
-public interface ProcessadorPagamento {
-    ResultadoPagamento processar(double valor);
-}
-
-public class ProcessadorCartao implements ProcessadorPagamento {
-    private final GatewayCartao gateway;
-    private final ValidadorCartao validador;
-    
-    public ProcessadorCartao(GatewayCartao gateway, ValidadorCartao validador) {
-        this.gateway = gateway;
-        this.validador = validador;
-    }
-    
-    @Override
-    public ResultadoPagamento processar(double valor) {
-        // Apenas lógica de cartão
-        return gateway.cobrar(valor);
-    }
-}
-```
-
-### B.4 Decorator Pattern
-
-```java
-// Decorator Pattern com SRP: cada decorador adiciona UMA funcionalidade
-
-// Interface base
-public interface Relatorio {
-    String gerar();
-}
-
-// Implementação concreta: Responsabilidade = gerar conteúdo base
-public class RelatorioVendas implements Relatorio {
-    private final List<Venda> vendas;
-    
-    public RelatorioVendas(List<Venda> vendas) {
-        this.vendas = vendas;
-    }
-    
-    @Override
-    public String gerar() {
-        StringBuilder sb = new StringBuilder();
-        sb.append("RELATÓRIO DE VENDAS\n");
-        for (Venda venda : vendas) {
-            sb.append(venda.toString()).append("\n");
-        }
-        return sb.toString();
-    }
-}
-
-// Decorador abstrato
-public abstract class RelatorioDecorator implements Relatorio {
-    protected Relatorio relatorio;
-    
-    public RelatorioDecorator(Relatorio relatorio) {
-        this.relatorio = relatorio;
-    }
-}
-
-// Responsabilidade: Adicionar cabeçalho
-public class ComCabecalho extends RelatorioDecorator {
-    
-    public ComCabecalho(Relatorio relatorio) {
-        super(relatorio);
-    }
-    
-    @Override
-    public String gerar() {
-        return gerarCabecalho() + relatorio.gerar();
-    }
-    
-    private String gerarCabecalho() {
-        return "═══════════════════════════════\n" +
-               "   EMPRESA XYZ - " + LocalDate.now() + "\n" +
-               "═══════════════════════════════\n\n";
-    }
-}
-
-// Responsabilidade: Adicionar rodapé
-public class ComRodape extends RelatorioDecorator {
-    
-    public ComRodape(Relatorio relatorio) {
-        super(relatorio);
-    }
-    
-    @Override
-    public String gerar() {
-        return relatorio.gerar() + gerarRodape();
-    }
-    
-    private String gerarRodape() {
-        return "\n═══════════════════════════════\n" +
-               "Gerado automaticamente em " + LocalDateTime.now() +
-               "\n═══════════════════════════════";
-    }
-}
-
-// Responsabilidade: Adicionar assinatura digital
-public class ComAssinatura extends RelatorioDecorator {
-    private final ServicoAssinatura servicoAssinatura;
-    
-    public ComAssinatura(Relatorio relatorio, ServicoAssinatura servico) {
-        super(relatorio);
-        this.servicoAssinatura = servico;
-    }
-    
-    @Override
-    public String gerar() {
-        String conteudo = relatorio.gerar();
-        String assinatura = servicoAssinatura.assinar(conteudo);
-        return conteudo + "\n\nAssinatura Digital: " + assinatura;
-    }
-}
-
-// Uso: Composição de decoradores
-public class ExemploDecorator {
-    public static void main(String[] args) {
-        List<Venda> vendas = obterVendas();
-        
-        // Relatório simples
-        Relatorio relatorio = new RelatorioVendas(vendas);
-        
-        // Adicionar cabeçalho e rodapé
-        relatorio = new ComCabecalho(relatorio);
-        relatorio = new ComRodape(relatorio);
-        
-        // Adicionar assinatura
-        ServicoAssinatura servico = new ServicoAssinatura();
-        relatorio = new ComAssinatura(relatorio, servico);
-        
-        System.out.println(relatorio.gerar());
-    }
-    
-    private static List<Venda> obterVendas() {
-        return Arrays.asList(
-            new Venda("001", 100.0),
-            new Venda("002", 250.0)
-        );
-    }
-}
-```
-
----
-
-## 📊 Apêndice C: Métricas de Código
-
-### C.1 Ferramentas de Medição
-
-```java
-// Exemplo de configuração para análise estática
-
-// pom.xml (Maven)
-/*
-<plugin>
-    <groupId>org.sonarsource.scanner.maven</groupId>
-    <artifactId>sonar-maven-plugin</artifactId>
-    <version>3.9.1.2184</version>
-</plugin>
-
-<plugin>
-    <groupId>org.apache.maven.plugins</groupId>
-    <artifactId>maven-pmd-plugin</artifactId>
-    <version>3.15.0</version>
-    <configuration>
-        <rulesets>
-            <ruleset>custom-pmd-rules.xml</ruleset>
-        </rulesets>
-    </configuration>
-</plugin>
-*/
-
-// custom-pmd-rules.xml
-/*
-<?xml version="1.0"?>
-<ruleset name="Custom Rules">
-    
-    <!-- Limitar tamanho de classes -->
-    <rule ref="category/java/design.xml/ExcessiveClassLength">
-        <properties>
-            <property name="minimum" value="200" />
-        </properties>
-    </rule>
-    
-    <!-- Limitar número de métodos -->
-    <rule ref="category/java/design.xml/TooManyMethods">
-        <properties>
-            <property name="maxmethods" value="10" />
-        </properties>
-    </rule>
-    
-    <!-- Detectar God Classes -->
-    <rule ref="category/java/design.xml/GodClass" />
-    
-    <!-- Limitar complexidade ciclomática -->
-    <rule ref="category/java/design.xml/CyclomaticComplexity">
-        <properties>
-            <property name="methodReportLevel" value="10" />
-        </properties>
-    </rule>
-    
-    <!-- Detectar acoplamento excessivo -->
-    <rule ref="category/java/design.xml/CouplingBetweenObjects">
-        <properties>
-            <property name="threshold" value="5" />
-        </properties>
-    </rule>
-    
-</ruleset>
-*/
-```
-
-### C.2 Script de Análise Customizado
-
-```java
-import java.io.File;
-import java.nio.file.Files;
-import java.nio.file.Path;
-import java.util.*;
-import java.util.stream.Collectors;
-
-/**
- * Analisador de conformidade com SRP
- */
-public class AnalisadorSRP {
-    
-    private static final int MAX_LINHAS = 200;
-    private static final int MAX_METODOS = 10;
-    private static final int MAX_DEPENDENCIAS = 5;
-    
-    public static void main(String[] args) throws Exception {
-        String diretorio = args[0];
-        List<RelatorioClasse> relatorios = analisarDiretorio(diretorio);
-        
-        gerarRelatorio(relatorios);
-    }
-    
-    public static List<RelatorioClasse> analisarDiretorio(String dir) 
-            throws Exception {
-        List<RelatorioClasse> relatorios = new ArrayList<>();
-        
-        Files.walk(Path.of(dir))
-            .filter(p -> p.toString().endsWith(".java"))
-            .forEach(p -> {
-                try {
-                    RelatorioClasse rel = analisarArquivo(p.toFile());
-                    relatorios.add(rel);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            });
-        
-        return relatorios;
-    }
-    
-    public static RelatorioClasse analisarArquivo(File arquivo) 
-            throws Exception {
-        List<String> linhas = Files.readAllLines(arquivo.toPath());
-        
-        String nomeClasse = extrairNomeClasse(linhas);
-        int totalLinhas = contarLinhasCodigo(linhas);
-        int totalMetodos = contarMetodos(linhas);
-        int totalDependencias = contarDependencias(linhas);
-        
-        boolean conformeSRP = totalLinhas <= MAX_LINHAS
-            && totalMetodos <= MAX_METODOS
-            && totalDependencias <= MAX_DEPENDENCIAS;
-        
-        return new RelatorioClasse(
-            nomeClasse,
-            arquivo.getName(),
-            totalLinhas,
-            totalMetodos,
-            totalDependencias,
-            conformeSRP
-        );
-    }
-    
-    private static String extrairNomeClasse(List<String> linhas) {
-        return linhas.stream()
-            .filter(l -> l.contains("class ") || l.contains("interface "))
-            .findFirst()
-            .map(l -> l.replaceAll(".*(?:class|interface)\\s+(\\w+).*", "$1"))
-            .orElse("Unknown");
-    }
-    
-    private static int contarLinhasCodigo(List<String> linhas) {
-        return (int) linhas.stream()
-            .filter(l -> !l.trim().isEmpty())
-            .filter(l -> !l.trim().startsWith("//"))
-            .filter(l -> !l.trim().startsWith("/*"))
-            .filter(l -> !l.trim().startsWith("*"))
-            .count();
-    }
-    
-    private static int contarMetodos(List<String> linhas) {
-        return (int) linhas.stream()
-            .filter(l -> l.matches(".*\\s+(public|private|protected)\\s+.*\\(.*\\).*"))
-            .filter(l -> !l.contains("class "))
-            .count();
-    }
-    
-    private static int contarDependencias(List<String> linhas) {
-        return (int) linhas.stream()
-            .filter(l -> l.trim().startsWith("import "))
-            .filter(l -> !l.contains("java.lang"))
-            .count();
-    }
-    
-    public static void gerarRelatorio(List<RelatorioClasse> relatorios) {
-        System.out.println("\n╔═══════════════════════════════════════════════════════╗");
-        System.out.println("║          RELATÓRIO DE ANÁLISE SRP                     ║");
-        System.out.println("╚═══════════════════════════════════════════════════════╝\n");
-        
-        long totalClasses = relatorios.size();
-        long classesConformes = relatorios.stream()
-            .filter(r -> r.conformeSRP)
-            .count();
-        
-        double percentualConformidade = (double) classesConformes / totalClasses * 100;
-        
-        System.out.printf("Total de Classes: %d\n", totalClasses);
-        System.out.printf("Classes Conformes: %d (%.1f%%)\n", 
-            classesConformes, percentualConformidade);
-        System.out.printf("Classes Não Conformes: %d (%.1f%%)\n\n", 
-            totalClasses - classesConformes, 
-            100 - percentualConformidade);
-        
-        System.out.println("Classes que violam SRP:");
-        System.out.println("─".repeat(80));
-        
-        relatorios.stream()
-            .filter(r -> !r.conformeSRP)
-            .sorted(Comparator.comparingInt(r -> -r.totalLinhas))
-            .forEach(r -> {
-                System.out.printf("%-40s | Linhas: %4d | Métodos: %2d | Deps: %2d\n",
-                    r.nomeClasse,
-                    r.totalLinhas,
-                    r.totalMetodos,
-                    r.totalDependencias
-                );
-                
-                if (r.totalLinhas > MAX_LINHAS) {
-                    System.out.println("  ⚠️  Excede limite de linhas");
-                }
-                if (r.totalMetodos > MAX_METODOS) {
-                    System.out.println("  ⚠️  Muitos métodos");
-                }
-                if (r.totalDependencias > MAX_DEPENDENCIAS) {
-                    System.out.println("  ⚠️  Muitas dependências");
-                }
-                System.out.println();
-            });
-    }
-    
-    static class RelatorioClasse {
-        String nomeClasse;
-        String nomeArquivo;
-        int totalLinhas;
-        int totalMetodos;
-        int totalDependencias;
-        boolean conformeSRP;
-        
-        public RelatorioClasse(String nomeClasse, String nomeArquivo,
-                              int totalLinhas, int totalMetodos,
-                              int totalDependencias, boolean conformeSRP) {
-            this.nomeClasse = nomeClasse;
-            this.nomeArquivo = nomeArquivo;
-            this.totalLinhas = totalLinhas;
-            this.totalMetodos = totalMetodos;
-            this.totalDependencias = totalDependencias;
-            this.conformeSRP = conformeSRP;
-        }
-    }
-}
-```
-
----
-
-## 🎓 Apêndice D: Exercícios Práticos
-
-### Exercício 1: Identificar Violações
-
-```java
-// Analise a classe abaixo e identifique as violações do SRP
-public class GerenciadorUsuario {
-    private Connection conexao;
-    
-    public void criarUsuario(String nome, String email, String senha) {
-        // Validação
-        if (!email.contains("@")) {
-            throw new IllegalArgumentException("Email inválido");
-        }
-        
-        // Hash de senha
-        String senhaHash = BCrypt.hashpw(senha, BCrypt.gensalt());
-        
-        // Persistência
-        try {
-            PreparedStatement stmt = conexao.prepareStatement(
-                "INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)"
-            );
-            stmt.setString(1, nome);
-            stmt.setString(2, email);
-            stmt.setString(3, senhaHash);
-            stmt.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-        }
-        
-        // Email de boas-vindas
-        enviarEmail(email, "Bem-vindo!", "Obrigado por se cadastrar!");
-        
-        // Log
-        System.out.println("Usuário " + nome + " criado em " + new Date());
-        
-        // Auditoria
-        registrarAuditoria("CREATE_USER", nome);
-    }
-    
-    private void enviarEmail(String para, String assunto, String corpo) {
-        // Implementação SMTP
-    }
-    
-    private void registrarAuditoria(String acao, String detalhes) {
-        // Gravar em arquivo de auditoria
-    }
-}
-
-// TAREFA: Refatore esta classe aplicando o SRP
-// Quantas classes você criaria? Quais seriam suas responsabilidades?
-```
-
-### Exercício 2: Refatorar God Object
-
-```java
-// Refatore este "God Object" aplicando SRP
-public class SistemaEcommerce {
-    // ... imagine 1000+ linhas de código aqui
-    
-    public void processarCompra(Carrinho carrinho, String formaPagamento) {
-        // Validações
-        // Cálculos
-        // Estoque
-        // Pagamento
-        // Notificações
-        // Relatórios
-    }
-}
-
-// TAREFA: Desenhe a arquitetura refatorada
-// Quais classes você criaria?
-// Como elas se relacionariam?
-```
-
----
-
-## 🏆 Palavras Finais
-
-O **Princípio da Responsabilidade Única** é mais que uma técnica — é uma mentalidade que transforma a forma como pensamos sobre código. Cada classe, cada método, cada função deve ter um propósito claro e bem definido.
-
-**Lembre-se:**
-- ✅ Classes pequenas e focadas são mais fáceis de entender
-- ✅ Responsabilidades únicas facilitam testes
-- ✅ Código coeso é código profissional
-- ✅ SRP é a base para todos os outros princípios SOLID
-
-### Citação Final
-
-> *"Fazer as coisas certas é mais importante do que fazer as coisas rapidamente. E fazer as coisas certas começa com o design correto."* — Robert C. Martin
-
----
-
-**📖 Continue Aprendendo:**
-- Explore os outros princípios SOLID
-- Pratique refatoração regularmente
-- Compartilhe conhecimento com sua equipe
-- Revise código pensando em SRP
-
-**💡 Próximos Passos:**
-1. Aplique SRP no seu próximo commit
-2. Revise código existente buscando violações
-3. Configure ferramentas de análise estática
-4. Ensine SRP para um colega
-
----
-
-**Licença:** MIT  
-**Autor:** Guia Colaborativo  
-**Contribuições:** Bem-vindas via pull request
-
----
-
-*"Clean code always looks like it was written by someone who cares."* — Robert C. Martin
-
-═══════════════════════════════════════════════════════════════════════════
-
-**FIM DO DOCUMENTO**# Princípio da Responsabilidade Única (SRP)
+# Princípio da Responsabilidade Única (SRP)
 ## Single Responsibility Principle - Guia Completo
 
 ![SOLID Principles](https://img.shields.io/badge/SOLID-SRP-blue)
@@ -1180,7 +105,6 @@ Conclusão: 4 stakeholders = 4 responsabilidades = VIOLA SRP
 #### ❌ Violando o SRP
 
 ```java
-// ❌ Violando o SRP
 public class Usuario {
     private String nome;
     private String email;
@@ -1194,7 +118,7 @@ public class Usuario {
     }
     
     // Persistência
-    public void salvar() throws SQLException {
+    public void salvar() {
         Connection conn = DriverManager.getConnection("jdbc:mysql://...");
         PreparedStatement stmt = conn.prepareStatement(
             "INSERT INTO usuarios (nome, email, senha) VALUES (?, ?, ?)"
@@ -1307,42 +231,119 @@ public class UsuarioHTMLFormatter {
 
 #### ❌ Violando o SRP
 
-```python
-class ProcessadorPedido:
-    def processar_pedido(self, pedido):
-        # Validação
-        if not pedido.items:
-            raise ValueError("Pedido vazio")
-        
-        # Cálculo
-        total = 0
-        for item in pedido.items:
-            total += item.preco * item.quantidade
-        
-        # Desconto
-        if total > 1000:
-            total *= 0.9
-        
-        # Imposto
-        total *= 1.15
-        
-        # Persistência
-        conn = sqlite3.connect('pedidos.db')
-        cursor = conn.cursor()
-        cursor.execute(
-            "INSERT INTO pedidos (cliente_id, total) VALUES (?, ?)",
-            (pedido.cliente_id, total)
-        )
-        conn.commit()
-        conn.close()
-        
-        # Notificação
-        enviar_email(pedido.cliente.email, f"Pedido confirmado: R$ {total}")
-        
-        # Log
-        print(f"Pedido {pedido.id} processado com sucesso")
-        
-        return total
+```java
+cimport java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.PreparedStatement;
+import java.sql.SQLException;
+import java.util.List;
+
+class Cliente {
+    private int id;
+    private String email;
+
+    public Cliente(int id, String email) {
+        this.id = id;
+        this.email = email;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+}
+
+class Item {
+    private double preco;
+    private int quantidade;
+
+    public Item(double preco, int quantidade) {
+        this.preco = preco;
+        this.quantidade = quantidade;
+    }
+
+    public double getPreco() {
+        return preco;
+    }
+
+    public int getQuantidade() {
+        return quantidade;
+    }
+}
+
+class Pedido {
+    private int id;
+    private Cliente cliente;
+    private List<Item> items;
+
+    public Pedido(int id, Cliente cliente, List<Item> items) {
+        this.id = id;
+        this.cliente = cliente;
+        this.items = items;
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public Cliente getCliente() {
+        return cliente;
+    }
+
+    public List<Item> getItems() {
+        return items;
+    }
+}
+
+class ProcessadorPedido {
+    public double processarPedido(Pedido pedido) throws SQLException {
+        // Validação
+        if (pedido.getItems() == null || pedido.getItems().isEmpty()) {
+            throw new IllegalArgumentException("Pedido vazio");
+        }
+
+        // Cálculo
+        double total = 0;
+        for (Item item : pedido.getItems()) {
+            total += item.getPreco() * item.getQuantidade();
+        }
+
+        // Desconto
+        if (total > 1000) {
+            total *= 0.9;
+        }
+
+        // Imposto
+        total *= 1.15;
+
+        // Persistência
+        try (Connection conn = DriverManager.getConnection("jdbc:sqlite:pedidos.db")) {
+            String sql = "INSERT INTO pedidos (cliente_id, total) VALUES (?, ?)";
+            try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                stmt.setInt(1, pedido.getCliente().getId());
+                stmt.setDouble(2, total);
+                stmt.executeUpdate();
+            }
+        }
+
+        // Notificação (simulação)
+        enviarEmail(pedido.getCliente().getEmail(), "Pedido confirmado: R$ " + total);
+
+        // Log
+        System.out.println("Pedido " + pedido.getId() + " processado com sucesso");
+
+        return total;
+    }
+
+    private void enviarEmail(String email, String mensagem) {
+        // Aqui seria a implementação real de envio de e-mail
+        System.out.println("Enviando email para " + email + ": " + mensagem);
+    }
+}
+
 ```
 
 #### ✅ Seguindo o SRP
@@ -1890,89 +891,47 @@ O **acoplamento** mede o grau de interdependência entre módulos. O SRP reduz o
 
 #### Exemplo: Reduzindo Acoplamento com SRP
 
-```java
-// ❌ Alto Acoplamento (viola SRP)
-public class ProcessadorPagamento {
-    public void processar(Pedido pedido) throws Exception {
-        // Acoplamento direto com banco de dados
-        Connection conn = DriverManager.getConnection(
-            "jdbc:mysql://localhost:3306/db", "root", "password"
-        );
-        PreparedStatement stmt = conn.prepareStatement(
-            "UPDATE pedidos SET status = ? WHERE id = ?"
-        );
+```python
+# ❌ Alto Acoplamento (viola SRP)
+class ProcessadorPagamento:
+    def processar(self, pedido):
+        # Acoplamento direto com banco de dados
+        conn = mysql.connector.connect(host='localhost', user='root')
+        cursor = conn.cursor()
         
-        // Acoplamento direto com API externa
-        HttpClient client = HttpClient.newHttpClient();
-        HttpRequest request = HttpRequest.newBuilder()
-            .uri(URI.create("https://api.pagamento.com/charge"))
-            .POST(HttpRequest.BodyPublishers.ofString(
-                "{\"amount\": " + pedido.getTotal() + "}"
-            ))
-            .build();
-        client.send(request, HttpResponse.BodyHandlers.ofString());
+        # Acoplamento direto com API externa
+        response = requests.post('https://api.pagamento.com/charge', 
+                                 json={'amount': pedido.total})
         
-        // Acoplamento direto com email
-        Properties props = new Properties();
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        Session session = Session.getInstance(props);
-        MimeMessage message = new MimeMessage(session);
-        message.setSubject("Pagamento processado: " + pedido.getId());
-        Transport.send(message);
+        # Acoplamento direto com email
+        smtp = smtplib.SMTP('smtp.gmail.com', 587)
+        smtp.send_message(f'Pagamento processado: {pedido.id}')
         
-        // Acoplamento direto com log
-        FileWriter fw = new FileWriter("pagamentos.log", true);
-        fw.write(LocalDateTime.now() + ": Pedido " + pedido.getId() + " processado\n");
-        fw.close();
-    }
-}
+        # Acoplamento direto com log
+        with open('pagamentos.log', 'a') as f:
+            f.write(f'{datetime.now()}: Pedido {pedido.id} processado\n')
 
-// ✅ Baixo Acoplamento (segue SRP)
-public interface PedidoRepository {
-    void atualizarStatus(String pedidoId, String status);
-}
-
-public interface PaymentGateway {
-    ResultadoPagamento cobrar(double valor);
-}
-
-public interface Notificador {
-    void enviarConfirmacao(Pedido pedido);
-}
-
-public interface Logger {
-    void info(String mensagem);
-}
-
-public class ProcessadorPagamento {
-    private final PedidoRepository repositorio;
-    private final PaymentGateway gateway;
-    private final Notificador notificador;
-    private final Logger logger;
+# ✅ Baixo Acoplamento (segue SRP)
+class ProcessadorPagamento:
+    def __init__(self, 
+                 repositorio: PedidoRepository,
+                 gateway: PaymentGateway,
+                 notificador: Notificador,
+                 logger: Logger):
+        self.repositorio = repositorio
+        self.gateway = gateway
+        self.notificador = notificador
+        self.logger = logger
     
-    public ProcessadorPagamento(
-            PedidoRepository repositorio,
-            PaymentGateway gateway,
-            Notificador notificador,
-            Logger logger) {
-        this.repositorio = repositorio;
-        this.gateway = gateway;
-        this.notificador = notificador;
-        this.logger = logger;
-    }
-    
-    public ResultadoPagamento processar(Pedido pedido) {
-        ResultadoPagamento resultado = gateway.cobrar(pedido.getTotal());
+    def processar(self, pedido: Pedido) -> ResultadoPagamento:
+        resultado = self.gateway.cobrar(pedido.total)
         
-        if (resultado.isSucesso()) {
-            repositorio.atualizarStatus(pedido.getId(), "PAGO");
-            notificador.enviarConfirmacao(pedido);
-            logger.info("Pagamento processado: " + pedido.getId());
-        }
+        if resultado.sucesso:
+            self.repositorio.atualizar_status(pedido.id, 'PAGO')
+            self.notificador.enviar_confirmacao(pedido)
+            self.logger.info(f'Pagamento processado: {pedido.id}')
         
-        return resultado;
-    }
-}
+        return resultado
 ```
 
 **Benefícios:**
@@ -2192,108 +1151,64 @@ public class CalculadoraFinanceira
 
 O SRP é **pré-requisito** para o OCP:
 
-```java
+```typescript
 // ❌ Viola SRP e OCP
-public class ProcessadorPagamento {
-    public ResultadoPagamento processar(Pedido pedido, String tipo) {
-        if (tipo.equals("cartao")) {
+class ProcessadorPagamento {
+    processar(pedido: Pedido, tipo: string) {
+        if (tipo === 'cartao') {
             // Lógica cartão
-            validarCartao();
-            return cobrarCartao();
-        } else if (tipo.equals("boleto")) {
+            this.validarCartao();
+            this.cobrarCartao();
+        } else if (tipo === 'boleto') {
             // Lógica boleto
-            return gerarBoleto();
-        } else if (tipo.equals("pix")) {
+            this.gerarBoleto();
+        } else if (tipo === 'pix') {
             // Lógica PIX
-            return gerarQRCode();
+            this.gerarQRCode();
         }
-        throw new IllegalArgumentException("Tipo de pagamento inválido");
         // Adicionar novo método = modificar esta classe (viola OCP)
     }
-    
-    private void validarCartao() { /* ... */ }
-    private ResultadoPagamento cobrarCartao() { return null; }
-    private ResultadoPagamento gerarBoleto() { return null; }
-    private ResultadoPagamento gerarQRCode() { return null; }
 }
 
 // ✅ Segue SRP e OCP
-public interface MetodoPagamento {
-    ResultadoPagamento processar(double valor);
+interface MetodoPagamento {
+    processar(valor: number): ResultadoPagamento;
 }
 
-public class PagamentoCartao implements MetodoPagamento {
-    @Override
-    public ResultadoPagamento processar(double valor) {
+class PagamentoCartao implements MetodoPagamento {
+    processar(valor: number): ResultadoPagamento {
         // Apenas responsabilidade de cartão
-        return cobrarCartao(valor);
-    }
-    
-    private ResultadoPagamento cobrarCartao(double valor) {
-        return new ResultadoPagamento(true, "Cartão processado");
+        return this.cobrarCartao(valor);
     }
 }
 
-public class PagamentoBoleto implements MetodoPagamento {
-    @Override
-    public ResultadoPagamento processar(double valor) {
+class PagamentoBoleto implements MetodoPagamento {
+    processar(valor: number): ResultadoPagamento {
         // Apenas responsabilidade de boleto
-        return gerarBoleto(valor);
-    }
-    
-    private ResultadoPagamento gerarBoleto(double valor) {
-        return new ResultadoPagamento(true, "Boleto gerado");
+        return this.gerarBoleto(valor);
     }
 }
 
-public class PagamentoPix implements MetodoPagamento {
-    @Override
-    public ResultadoPagamento processar(double valor) {
+class PagamentoPix implements MetodoPagamento {
+    processar(valor: number): ResultadoPagamento {
         // Apenas responsabilidade de PIX
-        return gerarQRCode(valor);
-    }
-    
-    private ResultadoPagamento gerarQRCode(double valor) {
-        return new ResultadoPagamento(true, "QR Code gerado");
+        return this.gerarQRCode(valor);
     }
 }
 
 // Adicionar novo método = criar nova classe (segue OCP)
-public class PagamentoCriptomoeda implements MetodoPagamento {
-    @Override
-    public ResultadoPagamento processar(double valor) {
-        return processarBlockchain(valor);
-    }
-    
-    private ResultadoPagamento processarBlockchain(double valor) {
-        return new ResultadoPagamento(true, "Transação blockchain");
+class PagamentoCriptomoeda implements MetodoPagamento {
+    processar(valor: number): ResultadoPagamento {
+        return this.processarBlockchain(valor);
     }
 }
 
-public class ProcessadorPagamento {
-    private final MetodoPagamento metodo;
+class ProcessadorPagamento {
+    constructor(private metodo: MetodoPagamento) {}
     
-    public ProcessadorPagamento(MetodoPagamento metodo) {
-        this.metodo = metodo;
+    processar(pedido: Pedido): ResultadoPagamento {
+        return this.metodo.processar(pedido.total);
     }
-    
-    public ResultadoPagamento processar(Pedido pedido) {
-        return metodo.processar(pedido.getTotal());
-    }
-}
-
-// Classe auxiliar
-public class ResultadoPagamento {
-    private final boolean sucesso;
-    private final String mensagem;
-    
-    public ResultadoPagamento(boolean sucesso, String mensagem) {
-        this.sucesso = sucesso;
-        this.mensagem = mensagem;
-    }
-    
-    public boolean isSucesso() { return sucesso; }
-    public String getMensagem() { return mensagem; }
 }
 ```
 
@@ -2357,66 +1272,40 @@ public class Funcionario implements Trabalhavel, Alimentavel,
 
 SRP facilita LSP ao evitar classes com múltiplas responsabilidades conflitantes:
 
-```java
-// ❌ Viola LSP (e SRP)
-public class Passaro {
-    public void voar() {
-        System.out.println("Voando...");
-    }
+```python
+# ❌ Viola LSP (e SRP)
+class Passaro:
+    def voar(self):
+        print("Voando...")
     
-    public void nadar() {
-        System.out.println("Nadando...");
-    }
-}
+    def nadar(self):
+        print("Nadando...")
 
-public class Pinguim extends Passaro {
-    @Override
-    public void voar() {
-        // Pinguim não voa! Viola LSP
-        throw new UnsupportedOperationException("Pinguins não voam!");
-    }
-}
+class Pinguim(Passaro):
+    def voar(self):
+        # Pinguim não voa! Viola LSP
+        raise Exception("Pinguins não voam!")
 
-// ✅ Segue LSP e SRP
-public abstract class Passaro {
-    public abstract void mover();
-}
+# ✅ Segue LSP e SRP
+class Passaro:
+    def mover(self):
+        pass
 
-public abstract class PassaroVoador extends Passaro {
-    @Override
-    public void mover() {
-        voar();
-    }
-    
-    public void voar() {
-        System.out.println("Voando...");
-    }
-}
+class PassaroVoador(Passaro):
+    def voar(self):
+        print("Voando...")
 
-public abstract class PassaroNadador extends Passaro {
-    @Override
-    public void mover() {
-        nadar();
-    }
-    
-    public void nadar() {
-        System.out.println("Nadando...");
-    }
-}
+class PassaroNadador(Passaro):
+    def nadar(self):
+        print("Nadando...")
 
-public class Aguia extends PassaroVoador {
-    @Override
-    public void voar() {
-        System.out.println("Águia voando alto...");
-    }
-}
+class Aguia(PassaroVoador):
+    def voar(self):
+        print("Águia voando alto...")
 
-public class Pinguim extends PassaroNadador {
-    @Override
-    public void nadar() {
-        System.out.println("Pinguim nadando...");
-    }
-}
+class Pinguim(PassaroNadador):
+    def nadar(self):
+        print("Pinguim nadando...")
 ```
 
 ### 6.5 SRP e DIP (Dependency Inversion Principle)
@@ -2425,96 +1314,59 @@ public class Pinguim extends PassaroNadador {
 
 SRP + DIP = arquitetura altamente desacoplada:
 
-```java
+```go
 // ❌ Viola SRP e DIP
-public class PedidoService {
-    public void processarPedido(Pedido pedido) throws Exception {
-        // Dependência concreta de MySQL
-        Connection conn = DriverManager.getConnection(
-            "jdbc:mysql://localhost/dbname", "user", "pass"
-        );
-        PreparedStatement stmt = conn.prepareStatement(
-            "INSERT INTO pedidos ..."
-        );
-        stmt.executeUpdate();
-        conn.close();
-        
-        // Dependência concreta de SMTP
-        Properties props = new Properties();
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        Session session = Session.getInstance(props);
-        MimeMessage message = new MimeMessage(session);
-        Transport.send(message);
-    }
+type PedidoService struct {}
+
+func (s *PedidoService) ProcessarPedido(pedido Pedido) {
+    // Dependência concreta de MySQL
+    db, _ := sql.Open("mysql", "user:pass@/dbname")
+    db.Exec("INSERT INTO pedidos ...")
+    
+    // Dependência concreta de SMTP
+    smtp, _ := net.Dial("tcp", "smtp.gmail.com:587")
+    // ...
 }
 
 // ✅ Segue SRP e DIP
-public interface PedidoRepository {
-    void salvar(Pedido pedido) throws Exception;
+type PedidoRepository interface {
+    Salvar(pedido Pedido) error
 }
 
-public interface Notificador {
-    void enviar(String destinatario, String mensagem) throws Exception;
+type Notificador interface {
+    Enviar(destinatario string, mensagem string) error
 }
 
-public class PedidoService {
-    private final PedidoRepository repository;  // Abstração
-    private final Notificador notificador;      // Abstração
-    
-    public PedidoService(PedidoRepository repository, Notificador notificador) {
-        this.repository = repository;
-        this.notificador = notificador;
+type PedidoService struct {
+    repository  PedidoRepository  // Abstração
+    notificador Notificador       // Abstração
+}
+
+func (s *PedidoService) ProcessarPedido(pedido Pedido) error {
+    // Depende de abstrações, não implementações
+    if err := s.repository.Salvar(pedido); err != nil {
+        return err
     }
-    
-    public void processarPedido(Pedido pedido) throws Exception {
-        // Depende de abstrações, não implementações
-        repository.salvar(pedido);
-        notificador.enviar(
-            pedido.getCliente().getEmail(),
-            "Pedido confirmado"
-        );
-    }
+    return s.notificador.Enviar(pedido.Cliente.Email, "Pedido confirmado")
 }
 
 // Implementações concretas
-public class MySQLPedidoRepository implements PedidoRepository {
-    private final Connection db;
-    
-    public MySQLPedidoRepository(Connection db) {
-        this.db = db;
-    }
-    
-    @Override
-    public void salvar(Pedido pedido) throws SQLException {
-        PreparedStatement stmt = db.prepareStatement(
-            "INSERT INTO pedidos (cliente_id, total) VALUES (?, ?)"
-        );
-        stmt.setInt(1, pedido.getClienteId());
-        stmt.setDouble(2, pedido.getTotal());
-        stmt.executeUpdate();
-    }
+type MySQLPedidoRepository struct {
+    db *sql.DB
 }
 
-public class EmailNotificador implements Notificador {
-    private final String smtpHost;
-    
-    public EmailNotificador(String smtpHost) {
-        this.smtpHost = smtpHost;
-    }
-    
-    @Override
-    public void enviar(String destinatario, String mensagem) throws Exception {
-        // Implementação SMTP
-        Properties props = new Properties();
-        props.put("mail.smtp.host", smtpHost);
-        Session session = Session.getInstance(props);
-        
-        MimeMessage message = new MimeMessage(session);
-        message.setRecipients(Message.RecipientType.TO, destinatario);
-        message.setText(mensagem);
-        
-        Transport.send(message);
-    }
+func (r *MySQLPedidoRepository) Salvar(pedido Pedido) error {
+    _, err := r.db.Exec("INSERT INTO pedidos ...")
+    return err
+}
+
+type EmailNotificador struct {
+    smtpHost string
+}
+
+func (n *EmailNotificador) Enviar(destinatario, mensagem string) error {
+    // Implementação SMTP
+    return nil
 }
 ```
 
@@ -2681,85 +1533,37 @@ end
 
 **Problema comum**: Classes `Utils` que violam SRP.
 
-```java
+```kotlin
 // ❌ Classe Utils genérica (viola SRP)
-public class Utils {
-    public static String formatarCPF(String cpf) {
-        return cpf.substring(0, 3) + "." + 
-               cpf.substring(3, 6) + "." + 
-               cpf.substring(6, 9) + "-" + 
-               cpf.substring(9, 11);
-    }
-    
-    public static boolean validarEmail(String email) {
-        return email.contains("@");
-    }
-    
-    public static int calcularIdade(LocalDate dataNascimento) {
-        return Period.between(dataNascimento, LocalDate.now()).getYears();
-    }
-    
-    public static String gerarHash(String senha) {
-        return BCrypt.hashpw(senha, BCrypt.gensalt());
-    }
-    
-    public static String converterParaJSON(Object obj) {
-        return new Gson().toJson(obj);
-    }
+object Utils {
+    fun formatarCPF(cpf: String): String { }
+    fun validarEmail(email: String): Boolean { }
+    fun calcularIdade(dataNascimento: Date): Int { }
+    fun gerarHash(senha: String): String { }
+    fun converterParaJSON(obj: Any): String { }
 }
 
 // ✅ Classes especializadas (segue SRP)
-public class FormatadorDocumento {
-    public String formatarCPF(String cpf) {
-        return cpf.substring(0, 3) + "." + 
-               cpf.substring(3, 6) + "." + 
-               cpf.substring(6, 9) + "-" + 
-               cpf.substring(9, 11);
-    }
-    
-    public String formatarCNPJ(String cnpj) {
-        return cnpj.substring(0, 2) + "." +
-               cnpj.substring(2, 5) + "." +
-               cnpj.substring(5, 8) + "/" +
-               cnpj.substring(8, 12) + "-" +
-               cnpj.substring(12, 14);
+object FormatadorDocumento {
+    fun formatarCPF(cpf: String): String { }
+    fun formatarCNPJ(cnpj: String): String { }
+}
+
+object ValidadorEmail {
+    fun validar(email: String): Boolean {
+        return email.matches(Regex("[^@]+@[^@]+\\.[^@]+"))
     }
 }
 
-public class ValidadorEmail {
-    private static final Pattern EMAIL_PATTERN = 
-        Pattern.compile("^[^@]+@[^@]+\\.[^@]+$");
-    
-    public boolean validar(String email) {
-        return EMAIL_PATTERN.matcher(email).matches();
+object CalculadoraIdade {
+    fun calcular(dataNascimento: LocalDate): Int {
+        return Period.between(dataNascimento, LocalDate.now()).years
     }
 }
 
-public class CalculadoraIdade {
-    public int calcular(LocalDate dataNascimento) {
-        return Period.between(dataNascimento, LocalDate.now()).getYears();
-    }
-}
-
-public class GeradorHash {
-    public String gerar(String senha) {
-        return BCrypt.hashpw(senha, BCrypt.gensalt());
-    }
-    
-    public boolean verificar(String senha, String hash) {
-        return BCrypt.checkpw(senha, hash);
-    }
-}
-
-public class ConversorJSON {
-    private final Gson gson = new Gson();
-    
-    public String paraJSON(Object obj) {
-        return gson.toJson(obj);
-    }
-    
-    public <T> T deJSON(String json, Class<T> classe) {
-        return gson.fromJson(json, classe);
+object GeradorHash {
+    fun gerar(senha: String): String {
+        return BCrypt.hashpw(senha, BCrypt.gensalt())
     }
 }
 ```
@@ -2805,202 +1609,52 @@ Impacto:
 
 ### 8.2 Testabilidade
 
-```java
+```csharp
 // ❌ Difícil de testar (viola SRP)
-public class ServicoUsuario {
-    public void criarUsuario(String nome, String email) throws Exception {
+public class ServicoUsuario
+{
+    public void CriarUsuario(string nome, string email)
+    {
         // Lógica de validação
-        if (nome == null || nome.isEmpty()) {
-            throw new IllegalArgumentException("Nome inválido");
-        }
+        if (string.IsNullOrEmpty(nome)) throw new Exception();
         
         // Acesso direto ao banco
-        Connection conn = DriverManager.getConnection(
-            "jdbc:mysql://localhost:3306/db", "root", "password"
-        );
-        PreparedStatement stmt = conn.prepareStatement(
-            "INSERT INTO usuarios (nome, email) VALUES (?, ?)"
-        );
-        stmt.setString(1, nome);
-        stmt.setString(2, email);
-        stmt.executeUpdate();
-        conn.close();
+        using var conn = new SqlConnection("Server=...");
+        conn.Execute("INSERT INTO...");
         
         // Envio de email
-        Properties props = new Properties();
-        props.put("mail.smtp.host", "smtp.gmail.com");
-        Session session = Session.getInstance(props);
-        MimeMessage message = new MimeMessage(session);
-        message.setSubject("Bem-vindo!");
-        Transport.send(message);
+        var smtp = new SmtpClient("smtp.gmail.com");
+        smtp.Send("Bem-vindo!");
         
         // Log
-        FileWriter fw = new FileWriter("log.txt", true);
-        fw.write("Usuário " + nome + " criado\n");
-        fw.close();
+        File.AppendText("log.txt").WriteLine($"Usuário {nome} criado");
     }
 }
 
 // Para testar: precisa de banco real, servidor SMTP, sistema de arquivos
 
 // ✅ Fácil de testar (segue SRP)
-public interface Validador {
-    boolean validar(Usuario usuario);
-}
-
-public interface UsuarioRepository {
-    void salvar(Usuario usuario);
-}
-
-public interface Notificador {
-    void enviarBoasVindas(Usuario usuario);
-}
-
-public interface Logger {
-    void info(String mensagem);
-}
-
-public class ServicoUsuario {
-    private final Validador validador;
-    private final UsuarioRepository repository;
-    private final Notificador notificador;
-    private final Logger logger;
+public class ServicoUsuario
+{
+    private readonly IValidador validador;
+    private readonly IUsuarioRepository repository;
+    private readonly INotificador notificador;
+    private readonly ILogger logger;
     
-    public ServicoUsuario(
-            Validador validador,
-            UsuarioRepository repository,
-            Notificador notificador,
-            Logger logger) {
-        this.validador = validador;
-        this.repository = repository;
-        this.notificador = notificador;
-        this.logger = logger;
-    }
-    
-    public void criarUsuario(String nome, String email) {
-        Usuario usuario = new Usuario(nome, email);
-        
-        if (!validador.validar(usuario)) {
-            throw new IllegalArgumentException("Usuário inválido");
-        }
-        
-        repository.salvar(usuario);
-        notificador.enviarBoasVindas(usuario);
-        logger.info("Usuário " + nome + " criado");
-    }
-}
-
-// TESTE UNITÁRIO
-import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.*;
-
-public class ServicoUsuarioTest {
-    
-    @Test
-    public void deveLancarExcecao_QuandoNomeInvalido() {
+    [Fact]
+    public void DeveLancarExcecao_QuandoNomeInvalido()
+    {
         // Arrange
-        Validador validadorMock = mock(Validador.class);
-        when(validadorMock.validar(any(Usuario.class))).thenReturn(false);
+        var validadorMock = new Mock<IValidador>();
+        validadorMock.Setup(v => v.Validar(It.IsAny<Usuario>()))
+                     .Returns(false);
         
-        ServicoUsuario servico = new ServicoUsuario(
-            validadorMock,
-            mock(UsuarioRepository.class),
-            mock(Notificador.class),
-            mock(Logger.class)
+        var servico = new ServicoUsuario(
+            validadorMock.Object,
+            Mock.Of<IUsuarioRepository>(),
+            Mock.Of<INotificador>(),
+            Mock.Of<ILogger>()
         );
         
         // Act & Assert
-        assertThrows(IllegalArgumentException.class, () -> {
-            servico.criarUsuario("", "teste@email.com");
-        });
-    }
-    
-    @Test
-    public void deveSalvarUsuario_QuandoDadosValidos() {
-        // Arrange
-        Validador validadorMock = mock(Validador.class);
-        when(validadorMock.validar(any(Usuario.class))).thenReturn(true);
-        
-        UsuarioRepository repositoryMock = mock(UsuarioRepository.class);
-        Notificador notificadorMock = mock(Notificador.class);
-        Logger loggerMock = mock(Logger.class);
-        
-        ServicoUsuario servico = new ServicoUsuario(
-            validadorMock,
-            repositoryMock,
-            notificadorMock,
-            loggerMock
-        );
-        
-        // Act
-        servico.criarUsuario("João Silva", "joao@email.com");
-        
-        // Assert
-        verify(repositoryMock, times(1)).salvar(any(Usuario.class));
-        verify(notificadorMock, times(1)).enviarBoasVindas(any(Usuario.class));
-        verify(loggerMock, times(1)).info(contains("João Silva"));
-    }
-    
-    @Test
-    public void naoDeveEnviarEmail_QuandoValidacaoFalhar() {
-        // Arrange
-        Validador validadorMock = mock(Validador.class);
-        when(validadorMock.validar(any(Usuario.class))).thenReturn(false);
-        
-        Notificador notificadorMock = mock(Notificador.class);
-        
-        ServicoUsuario servico = new ServicoUsuario(
-            validadorMock,
-            mock(UsuarioRepository.class),
-            notificadorMock,
-            mock(Logger.class)
-        );
-        
-        // Act
-        try {
-            servico.criarUsuario("", "teste@email.com");
-        } catch (IllegalArgumentException e) {
-            // Esperado
-        }
-        
-        // Assert
-        verify(notificadorMock, never()).enviarBoasVindas(any(Usuario.class));
-    }
-}
-```
-
-**Benefícios dos Testes com SRP:**
-- ✅ Testes executam em **milissegundos** (sem I/O real)
-- ✅ Cada componente testado **isoladamente**
-- ✅ Mocks simples e diretos
-- ✅ Testes **determinísticos** (sem dependências externas)
-- ✅ Cobertura de código **acima de 90%**
-
-### 8.3 Escalabilidade
-
-#### Cenário: Sistema crescendo de 10 para 100 funcionalidades
-
-**Sem SRP (God Object):**
-```
-Classe Principal:
-├─ 5.000 linhas de código
-├─ 150 métodos
-├─ 30 desenvolvedores editando simultaneamente
-├─ Conflitos de merge: 15 por semana
-├─ Build time: 15 minutos
-└─ Impossível paralelizar desenvolvimento
-```
-
-**Com SRP (Classes Coesas):**
-```
-50 Classes Especializadas:
-├─ Média de 100 linhas por classe
-├─ 3 métodos por classe
-├─ 1-2 desenvolvedores por classe
-├─ Conflitos de merge: 1 por semana
-├─ Build time: 3 minutos
-└─ Desenvolvimento totalmente paralelo
-```
+        Assert.Throws
